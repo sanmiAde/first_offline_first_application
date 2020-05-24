@@ -4,11 +4,12 @@ import android.app.Application
 import com.sanmidev.firstoffline_firstapplication.MainActivity
 import com.sanmidev.firstoffline_firstapplication.di.module.ApplicationModule
 import com.sanmidev.firstoffline_firstapplication.di.module.DatabaseModule
+import com.sanmidev.firstoffline_firstapplication.di.module.NetworkModule
 import dagger.BindsInstance
 import dagger.Component
 
 @ApplicationScope
-@Component(modules = [ApplicationModule::class, DatabaseModule::class])
+@Component(modules = [ApplicationModule::class, DatabaseModule::class, NetworkModule::class])
 interface AppComponent {
 
     @Component.Factory

@@ -5,9 +5,11 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import com.sanmidev.firstoffline_firstapplication.BuildConfig
 import com.sanmidev.firstoffline_firstapplication.data.remote.EmployeeAPI
 import com.sanmidev.firstoffline_firstapplication.di.ApplicationScope
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
@@ -31,6 +33,19 @@ class NetworkModule {
     }
 
 
+    @Provides
+    @ApplicationScope
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        if (BuildConfig.BUILD_TYPE != "release") {
+            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        } else {
+            loggingInterceptor.level = HttpLoggingInterceptor.Level.NONE
+        }
+
+        return loggingInterceptor
+    }
+
 
     @Provides
     @ApplicationScope
@@ -45,7 +60,6 @@ class NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
             .cache(cache)
-
             .readTimeout(60, TimeUnit.SECONDS)
             .connectTimeout(60, TimeUnit.SECONDS)
             .build()
@@ -56,6 +70,12 @@ class NetworkModule {
 
     @Provides
     @ApplicationScope
+    internal fun providesMoshi(): Moshi {
+        return Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    }
+
+    @Provides
+    @ApplicationScope
     fun provideRetrofit(
         moshi: Moshi,
         okHttpClient: OkHttpClient
@@ -63,14 +83,16 @@ class NetworkModule {
         return Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .baseUrl("http://www.mocky.io/v2")
+            .baseUrl("http://www.mocky.io")
             .client(okHttpClient)
             .build()
     }
 
     @Provides
     @ApplicationScope
-    fun providesEmployeeWebService( retrofit: Retrofit): EmployeeAPI =
-        retrofit.create(EmployeeAPI::class.java)
+    fun providesEmployeeWebService( retrofit: Retrofit): EmployeeAPI {
+       return retrofit.create(EmployeeAPI::class.java)
+    }
+
 
 }

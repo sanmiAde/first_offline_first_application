@@ -1,27 +1,20 @@
 package com.sanmidev.firstoffline_firstapplication.data.remote.repo
 
-import android.util.Log
-import com.sanmidev.firstoffline_firstapplication.data.database.EmployeeDAO
-import com.sanmidev.firstoffline_firstapplication.data.database.EmployeeDatabase
+import arrow.core.Either
+import arrow.core.Left
+import arrow.core.Right
 import com.sanmidev.firstoffline_firstapplication.data.entities.EmployeeEntity
-import com.sanmidev.firstoffline_firstapplication.data.entities.EmployeeListEntity
 import com.sanmidev.firstoffline_firstapplication.data.mapper.EmployeeMapper
-import com.sanmidev.firstoffline_firstapplication.data.remote.EmployeeAPI
-import com.sanmidev.firstoffline_firstapplication.data.remote.EmployeeListDTO
-import com.sanmidev.firstoffline_firstapplication.utils.AppScheduler
-import com.sanmidev.firstoffline_firstapplication.utils.utils
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import com.sanmidev.firstoffline_firstapplication.data.remote.*
+import com.squareup.moshi.Moshi
 import io.reactivex.Maybe
-import io.reactivex.Observable
 import javax.inject.Inject
 
 class EmployeeRepositoryImpl @Inject constructor(
     private val employeeAPI: EmployeeAPI,
     private val employeeMapper: EmployeeMapper,
-    private val employeeDAO: EmployeeDAO,
-    private val appScheduler: AppScheduler,
-    private val utils: utils
+    private val moshi: Moshi
+
 ) : EmployeeRepository {
 
     override fun getEmployeeFromNetwork(): Maybe<List<EmployeeEntity>> {
@@ -33,9 +26,28 @@ class EmployeeRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun saveEmployeeListToDatabase(employeeEntities: List<EmployeeEntity>): Maybe<List<Long>> {
-        return  employeeDAO.insertListOfEmployees(employeeEntities)
+    //
+    override fun getEmployeeFromNetworkObservable(): Maybe<Either<ErrorDTO, List<EmployeeEntity>>> {
+
+        return employeeAPI.getEmployeesObservable().map { responsesBody ->
+            when (responsesBody.code()) {
+                200 -> {
+                    val employeeDTO =
+                        EmployeeListDTOJsonAdapter(moshi).fromJson(responsesBody.body()!!.string())
+                    Right(employeeMapper.transformToEntity(employeeDTO!!.employeeDto))
+                }
+                else -> {
+                    val errorDTO =
+                        ErrorDTOJsonAdapter(moshi).fromJson(responsesBody.errorBody()!!.string())!!
+                    Left(errorDTO)
+                }
+            }
+        }
     }
+
+//    override fun saveEmployeeListToDatabase(employeeEntities: List<EmployeeEntity>): Maybe<List<Long>> {
+//        return  employeeDAO.insertListOfEmployees(employeeEntities)
+//    }
 
 //    override fun getEmployee(): Observable<List<EmployeeEntity>> {
 //        val hasConnection = utils.isConnectedToInternet()
@@ -55,11 +67,11 @@ class EmployeeRepositoryImpl @Inject constructor(
 //
 //    }
 
-   fun getEmployeeFromDB(): Flowable<List<EmployeeEntity>> {
-        return employeeDAO.getEmployees().doOnNext {
-            Log.d("Repo", it.size.toString())
-        }
-    }
+//   fun getEmployeeFromDB(): Flowable<List<EmployeeEntity>> {
+//        return employeeDAO.getEmployees().doOnNext {
+//            Log.d("Repo", it.size.toString())
+//        }
+//    }
 
 
 }

@@ -1,0 +1,87 @@
+{
+
+  "employee":[
+
+    {
+
+      "firstname": "Fox",
+
+      "lastname": "William",
+
+      "age": "24",
+
+      "gender":"Male",
+
+      "id":"1",
+
+      "nationality":"Italian"
+
+    },
+
+    {
+
+      "firstname": "Dawood",
+
+      "lastname": "Tyson",
+
+      "age": "25",
+
+      "gender":"Male",
+
+      "id":"2",
+
+      "nationality":"Jamaican"
+
+    },
+
+    {
+
+      "firstname": "Jaylen",
+
+      "lastname": "Downes",
+
+      "age": "22",
+
+      "gender":"Female",
+
+      "id":"3",
+
+      "nationality":"Irish"
+
+    },
+
+    {
+
+      "firstname": "Ayomide",
+
+      "lastname": "Hart",
+
+      "age": "23",
+
+      "gender":"Male",
+
+      "id":"4",
+
+      "nationality":"Israeli"
+
+    },
+
+    {
+
+      "firstname": "Destiny",
+
+      "lastname": "Cortes",
+
+      "age": "25",
+
+      "gender":"Female",
+
+      "id":"5",
+
+      "nationality":"Indian"
+
+    }
+
+  ]
+
+}

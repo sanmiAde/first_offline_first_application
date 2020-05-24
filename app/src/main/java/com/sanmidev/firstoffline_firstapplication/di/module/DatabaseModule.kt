@@ -10,12 +10,11 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-object DatabaseModule {
+class DatabaseModule {
 
 
     @ApplicationScope
     @Provides
-    @JvmStatic
     fun providesEmployeeDatabase(application: Application): EmployeeDatabase {
         return Room.databaseBuilder(
             application,
@@ -26,7 +25,6 @@ object DatabaseModule {
 
     @ApplicationScope
     @Provides
-    @JvmStatic
     fun providesEmployeeDAO(employeeDatabase: EmployeeDatabase): EmployeeDAO {
         return employeeDatabase.employeeDao()
     }
