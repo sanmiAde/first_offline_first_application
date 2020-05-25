@@ -121,6 +121,7 @@ class MainViewModelTest {
                 .setBody(fileContent)
                 .setResponseCode(HttpURLConnection.HTTP_NOT_FOUND)
         )
+        
 
         val mainViewModel = MainViewModel(repository, appScheduler)
 
