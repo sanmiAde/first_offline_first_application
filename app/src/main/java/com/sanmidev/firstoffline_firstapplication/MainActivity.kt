@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 import com.sanmidev.firstoffline_firstapplication.data.remote.EmployeeResult
 import com.sanmidev.firstoffline_firstapplication.data.remote.repo.EmployeeRepository
 import com.sanmidev.firstoffline_firstapplication.utils.AppScheduler
@@ -20,6 +21,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var employeeRepository: EmployeeRepository
 
     @Inject
+    lateinit var vmFactory: MainViewModel.VMFactory
+
+    private val viewModel by lazy {
+        ViewModelProvider(this, vmFactory)[MainViewModel::class.java]
+    }
+
+    @Inject
     lateinit var appScheduler: AppScheduler
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        getEmployees().observe(this, androidx.lifecycle.Observer {
+        viewModel.getEmployees().observe(this, androidx.lifecycle.Observer {
             when(it){
                 is EmployeeResult.successReponse -> {
                     progressBar.visibility = View.GONE
@@ -51,31 +59,5 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun getEmployees(): LiveData<EmployeeResult> {
-        val employeeMutableLiveData = MutableLiveData<EmployeeResult>()
-        employeeMutableLiveData.value = EmployeeResult.loading()
 
-        employeeRepository.getEmployeeFromNetworkObservable()
-            .subscribeOn(appScheduler.io())
-            .observeOn(appScheduler.main()).subscribeBy(
-                onComplete = {
-
-                },
-                onSuccess = { eitherResponse ->
-                    eitherResponse.fold({
-                        employeeMutableLiveData.value = EmployeeResult.errorResponse(it)
-                        Log.d("main", it.error)
-                    }, {
-                        employeeMutableLiveData.value = EmployeeResult.successReponse(it)
-                        Log.d("main", it.toString())
-                    })
-                },
-                onError = {
-                    Log.d("main", it.toString())
-                }
-            )
-
-        return employeeMutableLiveData as LiveData<EmployeeResult>
-
-    }
 }

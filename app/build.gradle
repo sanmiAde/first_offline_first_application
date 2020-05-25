@@ -23,7 +23,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -35,7 +38,18 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
+    testImplementation("com.nhaarman:mockito-kotlin:$mockito_kotlin_version") {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
+    }
+    testImplementation "org.mockito:mockito-inline:$mockito_version"
 
+    androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
+    androidTestImplementation("com.nhaarman:mockito-kotlin:$mockito_kotlin_version") {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
+    }
+    androidTestImplementation "org.mockito:mockito-android:2.28.2"
     //AAC
     implementation "androidx.lifecycle:lifecycle-livedata:$livedata_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$livedata_version"
@@ -72,9 +86,13 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
-    testImplementation "com.squareup.okhttp3:mockwebserver:4.2.2"
-    testImplementation("com.squareup.okhttp3:okhttp:4.2.2")
+    testImplementation "com.squareup.okhttp3:mockwebserver:4.7.2"
+    testImplementation("com.squareup.okhttp3:okhttp:4.7.2")
     implementation 'com.github.javafaker:javafaker:1.0.2'
+
+
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:4.2.1"
+
 
     def arrow_version = "0.10.4"
     implementation "io.arrow-kt:arrow-core:$arrow_version"

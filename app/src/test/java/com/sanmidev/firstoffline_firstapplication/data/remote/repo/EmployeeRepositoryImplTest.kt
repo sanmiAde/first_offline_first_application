@@ -56,28 +56,6 @@ class EmployeeRepositoryImplTest {
         retrofit.create(EmployeeAPI::class.java)
     }
 
-
-    @Test
-    fun getEmployeeFromNetwork_shouldReturnEmployees_whenRequestIsSuccessful() {
-        val fileContent = javaClass.getResource("/employees.json")?.readText()!!
-
-        val employeeEnittyList = moshi.adapter(EmployeeListEntity::class.java)
-            .fromJson(fileContent)!!
-
-
-        mockWebServer.enqueue(
-            MockResponse()
-                .setBody(fileContent)
-                .setResponseCode(HttpURLConnection.HTTP_OK))
-
-
-        val testObserver = repository.getEmployeeFromNetwork().test()
-
-        testObserver.assertNoErrors()
-        testObserver.assertValue(employeeEnittyList.employee)
-
-    }
-
     @Test
     fun getEmployeeFromNetworkObservable_shouldReturnEmployees_whenRequestIsSuccessful() {
         val fileContent = javaClass.getResource("/employees.json")?.readText()!!
@@ -92,6 +70,7 @@ class EmployeeRepositoryImplTest {
                 .setResponseCode(HttpURLConnection.HTTP_OK))
 
 
+
         val testObserver = repository.getEmployeeFromNetworkObservable().test()
 
          testObserver.values()[0].fold({}, {
@@ -100,21 +79,6 @@ class EmployeeRepositoryImplTest {
 
     }
 
-    @Test
-    fun getEmployeeFromNetwork_shouldReturnError400_whenRequestIsNotSuccessful() {
-        val fileContent = javaClass.getResource("/error.json")?.readText()!!
-        val errorResponse = moshi.adapter(ErrorDTO::class.java).fromJson(fileContent)
-        mockWebServer.enqueue(
-            MockResponse()
-                .setBody(fileContent)
-                .setResponseCode(HttpURLConnection.HTTP_NOT_FOUND)
-        )
-
-        val testObserver = repository.getEmployeeFromNetwork().test()
-        val error = testObserver.errors()[0]
-        Assert.assertEquals(HttpURLConnection.HTTP_NOT_FOUND, error.stackTrace)
-        testObserver.assertError(HttpException::class.java)
-    }
 
     @Test
     fun getEmployeeFromNetworkObservable_shouldReturnError400_whenRequestIsNotSuccessful() {
